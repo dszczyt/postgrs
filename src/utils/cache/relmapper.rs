@@ -30,11 +30,11 @@ impl RelMapping {
 #[repr(C)]
 // #[derive(Debug)]
 pub struct RelMapFile {
-    pub magic: i32,			/* always RELMAPPER_FILEMAGIC */
-	pub num_mappings: i32,	/* number of valid RelMapping entries */
+    pub magic: i32,			    /* always RELMAPPER_FILEMAGIC */
+    pub num_mappings: i32,  	/* number of valid RelMapping entries */
     pub mappings: [RelMapping; MAX_MAPPINGS],
-	pub crc: PgCrc32c,			/* CRC of all above */
-	pub pad: i32,			/* to make the struct size be 512 exactly */
+    pub crc: PgCrc32c,			/* CRC of all above */
+    pub pad: i32,		    	/* to make the struct size be 512 exactly */
 }
 
 #[test]
