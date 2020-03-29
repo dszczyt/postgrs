@@ -9,11 +9,11 @@ use utils::cache::relmapper::RelMapFile;
 fn main() {
     println!("PG_DATA: {}", globals::data_dir());
 
-    let relMapFile = RelMapFile::load().unwrap();
-    println!("{:X?} {:?}", relMapFile.magic, relMapFile.num_mappings);
+    let rel_map_file = RelMapFile::load().unwrap();
+    println!("{:X?} {:?}", rel_map_file.magic, rel_map_file.num_mappings);
 
-    for num_mapping in 0..relMapFile.num_mappings {
-        let mapping = relMapFile.mappings.get(num_mapping as usize).unwrap();
+    for num_mapping in 0..rel_map_file.num_mappings {
+        let mapping = rel_map_file.mappings.get(num_mapping as usize).unwrap();
         println!("{:?}", mapping);
     }
 }
