@@ -1,3 +1,5 @@
+extern crate crc;
+
 mod utils;
 mod types;
 use utils::init::globals;

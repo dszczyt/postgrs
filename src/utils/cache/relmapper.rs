@@ -1,7 +1,8 @@
 use crate::types::oid::{DEFAULTTABLESPACE_OID, Oid};
+use crate::utils::init::globals::data_dir;
+use crc::crc32;
 use std::{mem::{size_of, transmute}, fs::File, io::{Read, BufReader}};
 use super::inval::get_database_path;
-use crate::utils::init::globals::data_dir;
 
 const FILENAME: &str = r#"pg_filenode.map"#;
 const MAGIC: i32 = 0x592717; // version ID value
@@ -43,8 +44,13 @@ impl RelMapFile {
             relMapFile.num_mappings < 0 ||
             relMapFile.num_mappings > MAX_MAPPINGS as i32
         {
-            return Err(format!("Relation mapping file \"{}\" contains invalid data", mapfilename))
+            return Err(format!("Relation mapping file \"{}\" contains invalid data", mapfilename));
         }
+
+        if crc32::checksum_castagnoli(&r[..size_of::<RelMapFile>() - size_of::<i32>() - size_of::<u32>()]) != relMapFile.crc {
+            return Err(format!("relation mapping file \"{}\" contains incorrect checksum", mapfilename))
+        }
+        
         Ok(relMapFile)
     }
 }
