@@ -1,4 +1,5 @@
 extern crate crc;
+#[macro_use] extern crate memoffset;
 
 mod utils;
 mod types;

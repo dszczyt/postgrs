@@ -16,7 +16,7 @@ pub struct RelMapping {
     pub mapfilenode: Oid, // its filenode number
 }
 
-// #[repr(C)]
+#[repr(C, packed)]
 // #[derive(Debug)]
 pub struct RelMapFile {
     pub magic: i32,			/* always RELMAPPER_FILEMAGIC */
@@ -47,10 +47,10 @@ impl RelMapFile {
             return Err(format!("Relation mapping file \"{}\" contains invalid data", mapfilename));
         }
 
-        if crc32::checksum_castagnoli(&r[..size_of::<RelMapFile>() - size_of::<i32>() - size_of::<u32>()]) != relMapFile.crc {
+        if crc32::checksum_castagnoli(&r[..offset_of!(RelMapFile, crc)]) != relMapFile.crc {
             return Err(format!("relation mapping file \"{}\" contains incorrect checksum", mapfilename))
         }
-        
+
         Ok(relMapFile)
     }
 }
