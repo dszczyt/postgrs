@@ -1,7 +1,7 @@
 use crate::types::oid::{DEFAULTTABLESPACE_OID, Oid};
 use crate::utils::init::globals::data_dir;
 use crc::crc32;
-use std::{mem::{size_of, transmute}, fs::File, io::{Read, BufReader}};
+use std::{mem::{size_of, transmute}, fs::File, io::Read};
 use super::inval::get_database_path;
 use std::path::PathBuf;
 
@@ -48,9 +48,8 @@ impl RelMapFile {
         let mut mapfilename = data_dir();
         mapfilename.push(get_database_path(1, DEFAULTTABLESPACE_OID)?);
         mapfilename.push(FILENAME);
-        let file = File::open(&mapfilename).unwrap();
-        let mut reader = BufReader::new(file);
-        reader.read_exact(&mut r).unwrap();
+        let mut file = File::open(&mapfilename).unwrap();
+        file.read_exact(&mut r).unwrap();
         
         let rel_map_file: Self = unsafe {transmute(r)};
         if rel_map_file.magic != MAGIC ||
