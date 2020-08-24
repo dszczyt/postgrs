@@ -1,4 +1,4 @@
-#![feature(bool_to_option)]
+// #![feature(bool_to_option)]
 
 extern crate crc;
 #[macro_use]
@@ -9,7 +9,6 @@ extern crate bitfield;
 #[macro_use]
 extern crate pest_derive;
 
-
 // #![feature(plugin)]
 // #![plugin(rustlex)]
 // #[allow(plugin_as_library)] extern crate rustlex;
@@ -18,13 +17,13 @@ mod pg_config;
 
 mod backend;
 
+mod access;
 mod parser;
 mod storage;
-mod access;
 mod types;
 mod utils;
-use parser::sql::{SQLParser, Rule};
 use parser::parser::raw_parser;
+use parser::sql::{Rule, SQLParser};
 use pest::Parser;
 use std::{
     fs::{self, File},
@@ -35,7 +34,7 @@ use utils::cache::relmapper::RelMapFile;
 use utils::init::globals;
 
 fn main() {
-    println!("PG_DATA: {}", globals::data_dir().to_str().unwrap());
+    println!("PGDATA: {}", globals::data_dir().to_str().unwrap());
 
     let rel_map_file = RelMapFile::load().unwrap();
     println!("{:X?} {:?}", rel_map_file.magic, rel_map_file.num_mappings);
@@ -56,7 +55,6 @@ fn main() {
 
     raw_parser("🙈🙉🙊💥ÿ".to_owned());
     println!("{:?}", raw_parser(" Select  ".to_owned()));
-
 
     let parser = SQLParser::parse(Rule::statement, "SeLeCt -- XXX\n  -12;");
     println!("{:?}", parser);

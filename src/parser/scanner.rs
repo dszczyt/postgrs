@@ -1,6 +1,6 @@
 #![deny(elided_lifetimes_in_paths)]
 
-use std::{collections::HashMap, error::Error, fmt, str::Chars, iter::Peekable};
+use std::{collections::HashMap, error::Error, fmt, iter::Peekable, str::Chars};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum SymbolType {
@@ -90,11 +90,11 @@ impl ScanTree {
     }
 
     pub fn append(&mut self, s: String, symbol_type: SymbolType) -> &mut Self {
-        let ch = match s.chars().nth(0) {
+        let ch = match s.chars().next() {
             Some(it) => it,
             _ => return self,
         };
-        let node = self.map.entry(ch).or_insert(ScanNode::new());
+        let node = self.map.entry(ch).or_insert_with(ScanNode::new);
         if s.chars().count() == 1 {
             node.symbol_type = Some(symbol_type);
         } else {
@@ -106,7 +106,7 @@ impl ScanTree {
     }
 
     pub fn longest_match(&self, s: String) -> Option<SymbolType> {
-        let ch = match s.chars().nth(0) {
+        let ch = match s.chars().next() {
             Some(it) => it,
             _ => return None,
         };
@@ -118,7 +118,7 @@ impl ScanTree {
 
         node.children
             .longest_match(s.chars().skip(1).collect()) // TODO: derecursive this
-            .or(node.symbol_type.clone())
+            .or_else(|| node.symbol_type.clone())
 
         /*match s.chars().nth(0) {
             Some(ch) => match self.map.get(&ch) {
