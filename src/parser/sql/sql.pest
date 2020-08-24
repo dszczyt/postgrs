@@ -1,0 +1,54 @@
+space = _{ " " | "\t" | "\n" | "\r" }
+__ = _{ space }
+horiz_space = _{ " " | "\t" }
+newline = _{ "\n" | "\r" }
+non_newline = _{ !"\n" }
+
+// WHITESPACE = _{ space+ }
+COMMENT = _{ "--" } //~ non_newline* ~ newline }
+
+whitespace = { space+ | COMMENT }
+
+special_whitespace = _{ space+ | COMMENT | newline }
+horiz_whitespace = _{ horiz_space | COMMENT }
+whitespace_with_newline	= _{ horiz_whitespace* ~ newline ~ special_whitespace* }
+
+quote = _{ "'" }
+
+quotecontinue = _{ whitespace_with_newline ~ quote }
+
+quotecontinuefail = _{ whitespace* ~ "-"? }
+
+dot = { "." }
+dotdot = { ".." }
+exclamation = { "!" }
+not_equals = { "!=" | "<>" }
+less = { "<" }
+less_equals = { "<=" }
+more = { ">" }
+more_equals = { ">=" }
+
+shift_left = { "<<" }
+shift_right = { ">>" }
+
+inet_contained_by_or_equals = { "<<=" }
+
+integer = { "-"? ~ ('0'..'9')+ }
+
+expression = ${ integer }
+
+begin = ${ ^"begin" }
+end = ${ ^"end" }
+
+select = ${ ^"select" }
+
+end_of_statement = ${ ";" }
+
+statement = ${
+    ( select ~ __ ~ expression )
+    | ( begin )
+    | ( end )
+    ~ __ ~ end_of_statement
+}
+
+statements = ${ SOI ~ __ ~ statement* ~ __ ~ EOI }

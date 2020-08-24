@@ -10,3 +10,9 @@ edition = "2018"
 # cached = "0.12"
 crc = "^1.0.0"
 memoffset = "^0.5"
+bitfield = "^0.13"
+# rustlex = "0.4.0"
+pest = { version="^2" }
+pest_derive = { version="^2" }
+regex = "1"
+transmute = "0.1"

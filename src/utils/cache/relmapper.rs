@@ -1,9 +1,13 @@
-use crate::types::oid::{DEFAULTTABLESPACE_OID, Oid};
+use super::inval::get_database_path;
+use crate::types::oid::{Oid, DEFAULTTABLESPACE_OID};
 use crate::utils::init::globals::data_dir;
 use crc::crc32;
-use std::{mem::{size_of, transmute}, fs::File, io::Read};
-use super::inval::get_database_path;
 use std::path::PathBuf;
+use std::{
+    fs::File,
+    io::Read,
+    mem::{size_of, transmute},
+};
 
 const FILENAME: &str = "pg_filenode.map";
 const MAGIC: i32 = 0x592717; // version ID value
@@ -14,7 +18,7 @@ pub type PgCrc32c = u32;
 #[repr(C)]
 #[derive(Debug)]
 pub struct RelMapping {
-    pub mapoid: Oid, // OID of a catalog
+    pub mapoid: Oid,      // OID of a catalog
     pub mapfilenode: Oid, // its filenode number
 }
 
@@ -30,11 +34,11 @@ impl RelMapping {
 #[repr(C)]
 // #[derive(Debug)]
 pub struct RelMapFile {
-    pub magic: i32,			    /* always RELMAPPER_FILEMAGIC */
-    pub num_mappings: i32,  	/* number of valid RelMapping entries */
+    pub magic: i32,        /* always RELMAPPER_FILEMAGIC */
+    pub num_mappings: i32, /* number of valid RelMapping entries */
     pub mappings: [RelMapping; MAX_MAPPINGS],
-    pub crc: PgCrc32c,			/* CRC of all above */
-    pub pad: i32,		    	/* to make the struct size be 512 exactly */
+    pub crc: PgCrc32c, /* CRC of all above */
+    pub pad: i32,      /* to make the struct size be 512 exactly */
 }
 
 #[test]
@@ -50,17 +54,23 @@ impl RelMapFile {
         mapfilename.push(FILENAME);
         let mut file = File::open(&mapfilename).unwrap();
         file.read_exact(&mut r).unwrap();
-        
-        let rel_map_file: Self = unsafe {transmute(r)};
-        if rel_map_file.magic != MAGIC ||
-            rel_map_file.num_mappings < 0 ||
-            rel_map_file.num_mappings > MAX_MAPPINGS as i32
+
+        let rel_map_file: Self = unsafe { transmute(r) };
+        if rel_map_file.magic != MAGIC
+            || rel_map_file.num_mappings < 0
+            || rel_map_file.num_mappings > MAX_MAPPINGS as i32
         {
-            return Err(format!("Relation mapping file \"{:?}\" contains invalid data", mapfilename));
+            return Err(format!(
+                "Relation mapping file \"{:?}\" contains invalid data",
+                mapfilename
+            ));
         }
 
         if crc32::checksum_castagnoli(&r[..offset_of!(RelMapFile, crc)]) != rel_map_file.crc {
-            return Err(format!("relation mapping file \"{:?}\" contains incorrect checksum", mapfilename))
+            return Err(format!(
+                "relation mapping file \"{:?}\" contains incorrect checksum",
+                mapfilename
+            ));
         }
 
         Ok(rel_map_file)
