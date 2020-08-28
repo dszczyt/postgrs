@@ -1,5 +1,5 @@
 use super::inval::get_database_path;
-use crate::types::oid::{Oid, DEFAULTTABLESPACE_OID};
+use crate::types::oid::{Oid, DEFAULTTABLESPACE};
 use crate::utils::init::globals::data_dir;
 use crc::crc32;
 use std::path::PathBuf;
@@ -25,7 +25,7 @@ pub struct RelMapping {
 impl RelMapping {
     pub fn get_path(&self) -> Result<PathBuf, String> {
         let mut filepath = data_dir();
-        filepath.push(get_database_path(1, DEFAULTTABLESPACE_OID)?);
+        filepath.push(get_database_path(1, DEFAULTTABLESPACE)?);
         filepath.push(self.mapfilenode.to_string());
         Ok(filepath)
     }
@@ -50,7 +50,7 @@ impl RelMapFile {
     pub fn load(/*shared: bool*/) -> Result<Self, String> {
         let mut r = [0u8; size_of::<RelMapFile>()];
         let mut mapfilename = data_dir();
-        mapfilename.push(get_database_path(1, DEFAULTTABLESPACE_OID)?);
+        mapfilename.push(get_database_path(1, DEFAULTTABLESPACE)?);
         mapfilename.push(FILENAME);
         let mut file = File::open(&mapfilename).unwrap();
         file.read_exact(&mut r).unwrap();

@@ -18,6 +18,7 @@ mod pg_config;
 mod backend;
 
 mod access;
+mod common;
 mod parser;
 mod storage;
 mod types;

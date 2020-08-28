@@ -3,12 +3,12 @@ use std::{convert::TryInto, ops::Deref};
 #[derive(PartialEq)]
 pub struct BlockNumber(u32);
 
-pub const InvalidBlockNumber: BlockNumber = BlockNumber(0xFFFFFFFF);
-pub const MaxBlockNumber: BlockNumber = BlockNumber(0xFFFFFFFE);
+pub const INVALID_BLOCK_NUMBER: BlockNumber = BlockNumber(0xFFFFFFFF);
+pub const MAX_BLOCK_NUMBER: BlockNumber = BlockNumber(0xFFFFFFFE);
 
 impl BlockNumber {
     pub fn is_valid(&self) -> bool {
-        InvalidBlockNumber != *self
+        INVALID_BLOCK_NUMBER != *self
     }
 }
 
@@ -21,10 +21,7 @@ pub struct BlockId {
 
 impl BlockId {
     pub fn new() -> Self {
-        Self {
-            bi_hi: 0,
-            bi_lo: 0,
-        }
+        Self { bi_hi: 0, bi_lo: 0 }
     }
 
     pub fn set(&mut self, value: BlockNumber) -> &Self {

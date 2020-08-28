@@ -1,7 +1,7 @@
 use postgrs::types::oid::Oid;
 
 pub struct RelFileNode {
-  pub SpecNode: Oid,
-  pub DBNode: Oid,
-  pub RelNode: Oid,
+  pub spc_node: Oid,
+  pub db_node: Oid,
+  pub rel_node: Oid,
 }
