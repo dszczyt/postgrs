@@ -1,6 +1,7 @@
 pub enum ForkNumber {
-  Main = -1,
-  FSM = 0,
-  Visibilitymap = 1,
-  Init = 2,
+  Invalid = -1,
+  Main = 0,
+  FSM = 1,
+  Visibilitymap = 2,
+  Init = 3,
 }
