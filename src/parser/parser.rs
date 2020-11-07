@@ -1,7 +1,8 @@
 // use std::rc::{Rc, Weak};
+
 use super::identifiers::Identifiers;
 use super::keywords::Keyword;
-use std::{boxed::Box, ops::Fn};
+use std::{boxed::Box, iter::Iterator, ops::Fn};
 
 // trait Matcher {
 //     fn match_exact(self, s: &str) -> Result<Token, String>;
@@ -91,6 +92,19 @@ pub enum State {
     Start,
 }
 
+trait TokenMatcher {
+    fn matches(s: &str) -> bool;
+}
+
+#[derive(Debug)]
+struct SelectMatcher {}
+
+impl TokenMatcher for SelectMatcher {
+    fn matches(s: &str) -> bool {
+        false
+    }
+}
+
 #[derive(Debug)]
 pub enum TokenType {
     Select,
@@ -108,8 +122,67 @@ pub enum TokenType {
 pub struct Token {
     pub start: usize,
     pub end: usize,
-    pub length: usize,
+    pub line: usize,
+    pub col: usize,
     pub xtype: TokenType,
+    pub value: String,
+}
+
+impl Default for Token {
+    fn default() -> Token {
+        Token {
+            start: 0,
+            end: 0,
+            line: 0,
+            col: 0,
+            xtype: TokenType::EOF,
+            value: "".to_owned(),
+        }
+    }
+}
+pub struct SelectToken(Token);
+
+#[derive(Debug)]
+pub struct SQLParser {
+    pub input: String,
+    start: usize,
+    ptr: usize,
+}
+
+impl SQLParser {
+    pub fn new(input: String) -> Self {
+        Self {
+            input,
+            start: 0,
+            ptr: 0,
+        }
+    }
+    fn potential_token(&self, length: usize) -> Option<String> {
+        let s: String = self.input.chars().skip(self.start).take(length).collect();
+        if s.len() == 0 {
+            return None;
+        }
+        Some(s)
+    }
+
+    fn new_token(&self, xtype: TokenType, value: String) -> Token {
+        Token {
+            start: self.start,
+            end: self.start + 0,
+            line: 0,
+            col: 0,
+            xtype,
+            value,
+        }
+    }
+}
+
+impl Iterator for SQLParser {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        None
+    }
 }
 
 pub fn raw_parser(s: String) -> Vec<Token> {
@@ -127,8 +200,26 @@ pub fn raw_parser(s: String) -> Vec<Token> {
                 tokens.push(Token {
                     start: start,
                     end: end,
-                    length: length,
                     xtype: TokenType::Select,
+                    ..Default::default()
+                });
+                start = end;
+                length = 0;
+            }
+            /*x if x.to_owned() == ";" => {
+                tokens.push(Token {
+                    start: start,
+                    end: end,
+                    xtype: TokenType::SemiColon,
+                });
+                start = end;
+                length = 0;
+            }
+            x if x.to_owned() == "." => {
+                tokens.push(Token {
+                    start: start,
+                    end: end,
+                    xtype: TokenType::Dot,
                 });
                 start = end;
                 length = 0;
@@ -137,12 +228,11 @@ pub fn raw_parser(s: String) -> Vec<Token> {
                 tokens.push(Token {
                     start: start,
                     end: end,
-                    length: length,
                     xtype: TokenType::Space,
                 });
                 start = end;
                 length = 0;
-            }
+            }*/
             _ => {}
         }
         println!("{} {}", ch, ch.len_utf8());

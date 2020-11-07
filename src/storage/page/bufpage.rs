@@ -1,12 +1,7 @@
 extern crate transmute;
 
 use std::{
-    fmt::Debug,
-    fs::File,
-    io::BufReader,
-    io::Read,
-    mem::{size_of},
-    path::PathBuf, convert::TryInto,
+    convert::TryInto, fmt::Debug, fs::File, io::BufReader, io::Read, mem::size_of, path::PathBuf,
 };
 use transmute::transmute;
 
@@ -125,21 +120,23 @@ impl Page {
 
     #[inline]
     pub fn header(&self) -> PageHeaderData {
-        let r = &self.data[.. size_of::<PageHeaderData>()];
+        let r = &self.data[..size_of::<PageHeaderData>()];
         unsafe { transmute(r) }
     }
 
     pub fn items(&self) -> Vec<ItemId> {
         let header = self.header();
-        let r = &self.data[size_of::<PageHeaderData>() .. header.pd_lower as usize];
+        let r = &self.data[size_of::<PageHeaderData>()..header.pd_lower as usize];
         unsafe { transmute(r) }
     }
 
     pub fn get_item_data(&self, idx: usize) -> Vec<u8> {
         let items = self.items();
         match items.get(idx) {
-            Some(item_id) => self.data[item_id.get_lp_off() as usize .. item_id.get_lp_len() as usize].to_vec(),
-            None => vec![]
+            Some(item_id) => {
+                self.data[item_id.get_lp_off() as usize..item_id.get_lp_len() as usize].to_vec()
+            }
+            None => vec![],
         }
     }
 }

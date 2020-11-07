@@ -1,6 +1,6 @@
 #![deny(elided_lifetimes_in_paths)]
 
-use std::{collections::HashMap, error::Error, fmt, str::Chars, iter::Peekable};
+use std::{collections::HashMap, error::Error, fmt, iter::Peekable, str::Chars};
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum SymbolType {

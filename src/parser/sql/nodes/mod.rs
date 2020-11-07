@@ -6,6 +6,4 @@ pub struct RawStmt {
     pub len: usize,
 }
 
-pub struct SelectStmt {
-
-}
+pub struct SelectStmt {}

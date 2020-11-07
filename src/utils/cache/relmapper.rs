@@ -24,7 +24,7 @@ pub struct RelMapping {
 
 impl RelMapping {
     pub fn get_path(&self) -> Result<PathBuf, String> {
-        let mut filepath = PathBuf::from(data_dir());
+        let mut filepath = data_dir();
         filepath.push(get_database_path(1, DEFAULTTABLESPACE_OID)?);
         filepath.push(self.mapfilenode.to_string());
         Ok(filepath)

@@ -21,10 +21,7 @@ pub struct BlockId {
 
 impl BlockId {
     pub fn new() -> Self {
-        Self {
-            bi_hi: 0,
-            bi_lo: 0,
-        }
+        Self { bi_hi: 0, bi_lo: 0 }
     }
 
     pub fn set(&mut self, value: BlockNumber) -> &Self {

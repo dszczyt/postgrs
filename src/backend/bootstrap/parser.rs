@@ -19,10 +19,7 @@ struct Location {
 }
 impl Location {
     pub fn new() -> Self {
-        Self{
-            line: 1,
-            col: 1,
-        }
+        Self { line: 1, col: 1 }
     }
 }
 
@@ -50,12 +47,12 @@ struct RegexMatcher {
 
 impl Matcher for RegexMatcher {
     fn run(&self, s: &str) -> Option<TokenMatch> {
-        self.regex
-            .find(s)
-            .and_then(|mat| Some(TokenMatch{
+        self.regex.find(s).and_then(|mat| {
+            Some(TokenMatch {
                 toktype: self.toktype.clone(),
-                len: mat.range().count()
-            }))
+                len: mat.range().count(),
+            })
+        })
         // match self.regex.find(s) {
         //     Some(mat) => Some(TokenMatch{toktype: self.toktype.clone(), len: mat.range().count()}),
         //     None => None
@@ -70,11 +67,14 @@ struct ExactMatcher {
 
 impl Matcher for ExactMatcher {
     fn run(&self, s: &str) -> Option<TokenMatch> {
-        s.starts_with(&self.value)
-            .then(|| TokenMatch{
+        if s.starts_with(&self.value) {
+            Some(TokenMatch {
                 toktype: self.toktype.clone(),
-                len: self.value.chars().count()
+                len: self.value.chars().count(),
             })
+        } else {
+            None
+        }
         // match s.starts_with(&self.value) {
         //     true => Some(TokenMatch{toktype: self.toktype.clone(), len: self.value.chars().count()}),
         //     false => None
@@ -89,11 +89,14 @@ struct CaseInsensitiveExactMatcher {
 
 impl Matcher for CaseInsensitiveExactMatcher {
     fn run(&self, s: &str) -> Option<TokenMatch> {
-        s.to_lowercase().starts_with(&self.value)
-            .then(|| TokenMatch{
+        if s.to_lowercase().starts_with(&self.value) {
+            Some(TokenMatch {
                 toktype: self.toktype.clone(),
-                len: self.value.chars().count()
+                len: self.value.chars().count(),
             })
+        } else {
+            None
+        }
     }
 }
 
@@ -105,17 +108,17 @@ struct Parser {
 
 impl Parser {
     pub fn init() -> Self {
-        Self{
+        Self {
             matchers: vec![
-                Box::new(RegexMatcher{
+                Box::new(RegexMatcher {
                     toktype: TokenType::Id,
                     regex: regex::Regex::new("\\A[-A-Za-z0-9_]+").unwrap(),
                 }),
-                Box::new(ExactMatcher{
+                Box::new(ExactMatcher {
                     toktype: TokenType::Open,
                     value: "open".to_string(),
                 }),
-                Box::new(ExactMatcher{
+                Box::new(ExactMatcher {
                     toktype: TokenType::XClose,
                     value: "close".to_string(),
                 }),
@@ -126,7 +129,8 @@ impl Parser {
     }
 
     fn next_match(&self, s: &str) -> Option<TokenMatch> {
-        (&self.matchers).into_iter()
+        (&self.matchers)
+            .into_iter()
             .filter_map(|matcher| matcher.run(s))
             .max_by_key(|matcher| matcher.len)
     }

@@ -1,4 +1,4 @@
-#![feature(bool_to_option)]
+// #![feature(bool_to_option)]
 
 extern crate crc;
 #[macro_use]
@@ -6,9 +6,8 @@ extern crate memoffset;
 #[macro_use]
 extern crate bitfield;
 
-#[macro_use]
-extern crate pest_derive;
-
+// #[macro_use]
+// extern crate pest_derive;
 
 // #![feature(plugin)]
 // #![plugin(rustlex)]
@@ -18,14 +17,13 @@ mod pg_config;
 
 mod backend;
 
+mod access;
 mod parser;
 mod storage;
-mod access;
 mod types;
 mod utils;
-use parser::sql::{SQLParser, Rule};
+// use parser::sql::{SQLParser, Rule};
 use parser::parser::raw_parser;
-use pest::Parser;
 use std::{
     fs::{self, File},
     mem::size_of,
@@ -50,14 +48,13 @@ fn main() {
         if file_length < size_of::<PageHeaderData>() {
             continue;
         }
-        let mut file = File::open(&path).unwrap();
+        // let mut file = File::open(&path).unwrap();
         println!("{:?}", PageHeaderData::from_file(path));
     }
 
     raw_parser("🙈🙉🙊💥ÿ".to_owned());
-    println!("{:?}", raw_parser(" Select  ".to_owned()));
+    println!("{:?}", raw_parser(" Select  ; ".to_owned()));
 
-
-    let parser = SQLParser::parse(Rule::statement, "SeLeCt -- XXX\n  -12;");
-    println!("{:?}", parser);
+    // let parser = SQLParser::parse(Rule::statement, "SeLeCt -- XXX\n  -12;");
+    // println!("{:?}", parser);
 }
